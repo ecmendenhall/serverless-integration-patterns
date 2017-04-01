@@ -1,0 +1,27 @@
+service: message-channel
+
+provider:
+  name: aws
+  runtime: python2.7
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'kinesis:PutRecord'
+      Resource:
+        'Fn::ImportValue': 'infrastructure:${opt:stage}:MessageChannel'
+
+functions:
+  send-message:
+    handler: handler.send_message
+    events:
+      - http:
+          path: message-channel/send
+          method: post
+
+  receive-message:
+    handler: handler.receive_message
+    events:
+      - stream:
+          type: kinesis
+          arn:
+            'Fn::ImportValue': 'infrastructure:${opt:stage}:MessageChannel'
