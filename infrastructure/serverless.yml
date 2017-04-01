@@ -3,18 +3,26 @@ service: infrastructure
 provider:
   name: aws
   runtime: python2.7
+  stage: dev
 
 resources:
   Resources:
-    KinesisStream:
+    MessageChannel:
       Type: AWS::Kinesis::Stream
       Properties:
-        Name: "MessageChannel"
         ShardCount: 1
   Outputs:
+     Channel:
+       Description: "Message channel"
+       Value:
+         Ref: MessageChannel
+       Export:
+         Name: '${self:service}:${opt:stage, self:provider.stage}:MessageChannel'
      ChannelArn:
        Description: "Message channel ARN"
        Value:
-         'Fn::GetAtt': [ KinesisStream, Arn ]
+         Fn::GetAtt:
+           - MessageChannel
+           - Arn
        Export:
-         Name: '${self:service}:${opt:stage}:MessageChannel'
+         Name: '${self:service}:${opt:stage, self:provider.stage}:MessageChannelArn'

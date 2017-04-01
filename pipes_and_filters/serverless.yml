@@ -1,0 +1,63 @@
+service: pipes-and-filters
+
+provider:
+  name: aws
+  runtime: python2.7
+  stage: dev
+  environment:
+    SNS_TOPIC_ARN_PREFIX: ${self:custom.snsTopicArnPrefix}
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'SNS:Publish'
+      Resource:
+        Fn::Join:
+          - ":"
+          - - ${self:custom.snsTopicArnPrefix}
+            - "*"
+
+custom:
+  snsTopicArnPrefix:
+    Fn::Join:
+      - ":"
+      - - "arn:aws:sns"
+        - Ref: AWS::Region
+        - Ref: AWS::AccountId
+
+functions:
+  start-pipeline:
+    handler: handler.start_pipeline
+    events:
+      - http:
+          path: start
+          method: post
+  lowercase:
+    handler: handler.lowercase_filter
+    events:
+      - sns:
+          topicName: new-message
+          displayName: "New message topic."
+  no-fun:
+    handler: handler.no_fun_filter
+    events:
+      - sns:
+          topicName: lowercased-message
+          displayName: "Lowercased messages."
+  exclamation-points:
+    handler: handler.exclamation_points_filter
+    events:
+      - sns:
+          topicName: no-fun-message
+          displayName: "Messages with no 'fun'."
+  not-too-excited:
+    handler: handler.not_too_excited_filter
+    events:
+      - sns:
+          topicName: exclamation-points-message
+          displayName: "Messages with exclamation points added."
+  sparkles-emoji:
+    handler: handler.sparkles_emoji_filter
+    events:
+      - sns:
+          topicName: not-too-excited-message
+          displayName: "Messages with less than four exclamation points."
