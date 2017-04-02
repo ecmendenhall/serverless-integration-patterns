@@ -39,7 +39,7 @@ The `create-order` service sends all new orders to the `new-order` topic. New or
 
 Each product's order service listens on the associated `<product>-order` topic, and saves the order to a DynamoDB table.
 
-A `GET` to the The `list-orders` service at `/orders` prints out order count and totals for each product:
+A `GET` to the `list-orders` service at `/orders` prints out order count and totals for each product:
 
 ```
 $ curl -s https://ldevpx1po1.execute-api.us-east-1.amazonaws.com/dev/orders | python -m json.tool
