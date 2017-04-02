@@ -23,7 +23,7 @@ This example includes Python dependencies. Before deploying, make sure you run:
 
 ```
 pip install -t vendor -r requirements.txt
-``
+```
 
 You'll also need to get a token for the GitHub GraphQL API. See [the documentation here](https://developer.github.com/early-access/graphql/guides/accessing-graphql/) for details.
 
