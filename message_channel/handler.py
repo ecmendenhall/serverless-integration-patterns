@@ -1,14 +1,15 @@
 import json
 
 import lib.api_gateway as api_gateway
-import lib.channel as channel
+import lib.sns as sns
 
 
 def send_message(event, context):
     message = api_gateway.parse_event(event) or "Hello, world!"
-    channel.send_message(message)
+    channel = 'message-channel'
+    sns.send_message(message, channel)
 
-    response_message = "Sent a message to the channel: {}".format(message)
+    response_message = "Sent a message to channel {}: {}".format(channel, message)
     body = {
         "message": response_message
     }
@@ -21,5 +22,5 @@ def send_message(event, context):
     return response
 
 def receive_message(event, context):
-    message = channel.parse_event(event)
+    message = sns.parse_event(event)
     print "Received a message: {}".format(message)

@@ -9,14 +9,24 @@ provider:
   runtime: python2.7
   stage: dev
   environment:
-    MESSAGE_CHANNEL_NAME:
-      'Fn::ImportValue': 'infrastructure:${opt:stage, self:provider.stage}:MessageChannel'
+    SNS_TOPIC_ARN_PREFIX: ${self:custom.snsTopicArnPrefix}
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
-        - 'Kinesis:PutRecord'
+        - 'SNS:Publish'
       Resource:
-        'Fn::ImportValue': 'infrastructure:${opt:stage, self:provider.stage}:MessageChannelArn'
+        Fn::Join:
+          - ":"
+          - - ${self:custom.snsTopicArnPrefix}
+            - "*"
+
+custom:
+  snsTopicArnPrefix:
+    Fn::Join:
+      - ":"
+      - - "arn:aws:sns"
+        - Ref: AWS::Region
+        - Ref: AWS::AccountId
 
 functions:
   send-message:
@@ -28,7 +38,6 @@ functions:
   receive-message:
     handler: handler.receive_message
     events:
-      - stream:
-          type: kinesis
-          arn:
-            'Fn::ImportValue': 'infrastructure:${opt:stage, self:provider.stage}:MessageChannelArn'
+      - sns:
+          topicName: 'message-channel'
+          displayName: "An example message channel"

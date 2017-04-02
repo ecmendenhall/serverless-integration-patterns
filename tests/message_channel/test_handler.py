@@ -6,7 +6,7 @@ from tests.test_helper import captured_output
 import message_channel.handler as handler
 
 
-@mock.patch('message_channel.handler.channel')
+@mock.patch('message_channel.handler.sns')
 class TestSendMessageHandler(TestCase):
 
     def test_returns_200(self, mock_channel):
@@ -21,7 +21,7 @@ class TestSendMessageHandler(TestCase):
         response = handler.send_message({}, {})
         body = json.loads(response['body'])
         message = body['message']
-        self.assertEqual(message, "Sent a message to the channel: Hello, world!")
+        self.assertEqual(message, "Sent a message to channel message-channel: Hello, world!")
 
     @mock.patch('message_channel.handler.api_gateway')
     def test_returns_message_from_event(self, mock_gateway, mock_channel):
@@ -29,9 +29,9 @@ class TestSendMessageHandler(TestCase):
         response = handler.send_message({}, {})
         body = json.loads(response['body'])
         message = body['message']
-        self.assertEqual(message, "Sent a message to the channel: Some message")
+        self.assertEqual(message, "Sent a message to channel message-channel: Some message")
 
-@mock.patch('message_channel.handler.channel')
+@mock.patch('message_channel.handler.sns')
 class TestReceiveMessageHandler(TestCase):
 
     def test_returns_message_from_event(self, mock_channel):
