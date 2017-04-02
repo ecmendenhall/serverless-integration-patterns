@@ -32,3 +32,15 @@ class TestApiGatewayDataParser(TestCase):
     def test_handles_missing_body(self):
         parsed_data = api_gateway.parse_body({"body": None})
         self.assertEqual(parsed_data, {})
+
+
+class TestApiGatewayRawDataParser(TestCase):
+
+    def test_returns_message_from_event_body_json(self):
+        data = "<tag>Not JSON!</tag>"
+        parsed_message = api_gateway.parse_raw_body({'body': data})
+        self.assertEqual(parsed_message, data)
+
+    def test_handles_missing_body(self):
+        parsed_data = api_gateway.parse_raw_body({"body": None})
+        self.assertEqual(parsed_data, '')

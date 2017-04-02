@@ -10,3 +10,6 @@ def parse_body(event):
     body_json = event.get('body') or '{}'
     body = json.loads(body_json)
     return body
+
+def parse_raw_body(event):
+    return event.get('body') or ''

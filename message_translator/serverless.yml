@@ -1,0 +1,14 @@
+service: message-translator
+
+provider:
+  name: aws
+  runtime: python2.7
+  stage: dev
+
+functions:
+  soap-service:
+    handler: handler.soap_service
+    events:
+      - http:
+          path: soapQL
+          method: post
