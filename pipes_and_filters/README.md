@@ -38,8 +38,10 @@ Tail the logs from each function in sequence to see the transformations:
 ```
 $ sls logs -f lowercase
 START RequestId: 31403194-175c-11e7-991d-3397a79e8947 Version: $LATEST
+
 Received message: HERE WE GO.  Transformed to here we go.
 Notifying lambdas subscribed to the lowercased-message topic.
+
 END RequestId: 31403194-175c-11e7-991d-3397a79e8947
 REPORT RequestId: 31403194-175c-11e7-991d-3397a79e8947	Duration: 232.65 ms	Billed Duration: 300 ms 	Memory Size: 1024 MB	Max Memory Used: 34 MB
 ```
@@ -47,8 +49,10 @@ REPORT RequestId: 31403194-175c-11e7-991d-3397a79e8947	Duration: 232.65 ms	Bille
 ```
 $ sls logs -f no-fun
 START RequestId: 31b4294c-175c-11e7-951e-4f464beb9f5a Version: $LATEST
+
 Received message: here we go.
 Notifying lambdas subscribed to the no-fun-message topic.
+
 END RequestId: 31b4294c-175c-11e7-951e-4f464beb9f5a
 REPORT RequestId: 31b4294c-175c-11e7-951e-4f464beb9f5a	Duration: 130.05 ms	Billed Duration: 200 ms 	Memory Size: 1024 MB	Max Memory Used: 26 MB
 ```
@@ -56,8 +60,10 @@ REPORT RequestId: 31b4294c-175c-11e7-951e-4f464beb9f5a	Duration: 130.05 ms	Bille
 ```
 $ sls logs -f exclamation-points
 START RequestId: 32030cbd-175c-11e7-b1c9-65c4c192e929 Version: $LATEST
+
 Received message: here we go.  Transformed to here we go!!!.
 Notifying lambdas subscribed to the exclamation-points-message topic.
+
 END RequestId: 32030cbd-175c-11e7-b1c9-65c4c192e929
 REPORT RequestId: 32030cbd-175c-11e7-b1c9-65c4c192e929	Duration: 133.30 ms	Billed Duration: 200 ms 	Memory Size: 1024 MB	Max Memory Used: 26 MB
 ```
@@ -65,8 +71,10 @@ REPORT RequestId: 32030cbd-175c-11e7-b1c9-65c4c192e929	Duration: 133.30 ms	Bille
 ```
 $ sls logs -f not-too-excited
 START RequestId: 32ba4e21-175c-11e7-9e6c-2559fcd2abde Version: $LATEST
+
 Received message: here we go!!!.
 Notifying lambdas subscribed to the not-too-excited-message topic.
+
 END RequestId: 32ba4e21-175c-11e7-9e6c-2559fcd2abde
 REPORT RequestId: 32ba4e21-175c-11e7-9e6c-2559fcd2abde	Duration: 329.00 ms	Billed Duration: 400 ms 	Memory Size: 1024 MB	Max Memory Used: 34 MB
 ```
@@ -74,7 +82,9 @@ REPORT RequestId: 32ba4e21-175c-11e7-9e6c-2559fcd2abde	Duration: 329.00 ms	Bille
 ```
 $ sls logs -f sparkles-emoji
 START RequestId: 338d076b-175c-11e7-bcad-75159176d351 Version: $LATEST
+
 Received message: here we go!!!.  Transformed to ✨  here we go!!! ✨ .
+
 END RequestId: 338d076b-175c-11e7-bcad-75159176d351
 REPORT RequestId: 338d076b-175c-11e7-bcad-75159176d351	Duration: 0.34 ms	Billed Duration: 100 ms 	Memory Size: 1024 MB	Max Memory Used: 21 MB
 ```
