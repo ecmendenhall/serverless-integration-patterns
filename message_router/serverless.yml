@@ -1,0 +1,263 @@
+service: message-router
+
+provider:
+  name: aws
+  runtime: python2.7
+  stage: dev
+  environment:
+    SNS_TOPIC_ARN_PREFIX: ${self:custom.snsTopicArnPrefix}
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'SNS:Publish'
+      Resource:
+        Fn::Join:
+          - ":"
+          - - ${self:custom.snsTopicArnPrefix}
+            - "*"
+
+custom:
+  snsTopicArnPrefix:
+    Fn::Join:
+      - ":"
+      - - "arn:aws:sns"
+        - Ref: AWS::Region
+        - Ref: AWS::AccountId
+  logGroupResourceArn:
+    Fn::Join:
+      - ":"
+      - - "arn:aws:logs"
+        - Ref: AWS::Region
+        - Ref: AWS::AccountId
+        - "log-group:/aws/lambda/*:*:*"
+
+functions:
+  create-order:
+    handler: handler.create
+    events:
+      - http:
+          path: orders/create
+          method: post
+  list-orders:
+    role: ScanProductsIAMRole
+    handler: handler.list
+    events:
+      - http:
+          path: orders
+          method: get
+  router:
+    handler: router.route
+    events:
+      - sns:
+          topicName: new-order
+          displayName: "Topic for all incoming orders"
+  whozits:
+    role: WriteWhozitsIAMRole
+    handler: products.whozits
+    events:
+      - sns:
+          topicName: whozits-order
+          displayName: "Topic for all whozits orders"
+  whatzits:
+    role: WriteWhatzitsIAMRole
+    handler: products.whatzits
+    events:
+      - sns:
+          topicName: whatzits-order
+          displayName: "Topic for all whatzits orders"
+  thingamabobs:
+    role: WriteThingamabobsIAMRole
+    handler: products.thingamabobs
+    events:
+      - sns:
+          topicName: thingamabobs-order
+          displayName: "Topic for all thingamabobs orders"
+
+
+resources:
+  Resources:
+    WhozitsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: whozits-orders
+        AttributeDefinitions:
+          - AttributeName: order_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: order_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    WriteWhozitsIAMPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn:
+        - WriteWhozitsIAMRole
+        - WhozitsTable
+      Properties:
+        Roles:
+          - Ref: WriteWhozitsIAMRole
+        PolicyName: lambda-dynamodb-whozits-table
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: arn:aws:dynamodb:*:*:table/whozits-orders
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: ${self:custom.logGroupResourceArn}
+    WriteWhozitsIAMRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: lambda-dynamodb-whozits-table
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+    WhatzitsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: whatzits-orders
+        AttributeDefinitions:
+          - AttributeName: order_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: order_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    WriteWhatzitsIAMPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn:
+        - WriteWhatzitsIAMRole
+        - WhatzitsTable
+      Properties:
+        Roles:
+          - Ref: WriteWhatzitsIAMRole
+        PolicyName: lambda-dynamodb-whatzits-table
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: arn:aws:dynamodb:*:*:table/whatzits-orders
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: ${self:custom.logGroupResourceArn}
+    WriteWhatzitsIAMRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: lambda-dynamodb-whatzits-table
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+    ThingamabobsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: thingamabobs-orders
+        AttributeDefinitions:
+          - AttributeName: order_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: order_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    WriteThingamabobsIAMPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn:
+        - WriteThingamabobsIAMRole
+        - ThingamabobsTable
+      Properties:
+        Roles:
+          - Ref: WriteThingamabobsIAMRole
+        PolicyName: lambda-dynamodb-thingamabobs-table
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: arn:aws:dynamodb:*:*:table/thingamabobs-orders
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: ${self:custom.logGroupResourceArn}
+    WriteThingamabobsIAMRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: lambda-dynamodb-thingamabobs-table
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+    ScanProductsIAMPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn:
+        - WhozitsTable
+        - WhatzitsTable
+        - ThingamabobsTable
+        - ScanProductsIAMRole
+      Properties:
+        Roles:
+          - Ref: ScanProductsIAMRole
+        PolicyName: lambda-dynamodb-scan-products-tables
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+              Resource: arn:aws:dynamodb:*:*:table/whozits-orders
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+              Resource: arn:aws:dynamodb:*:*:table/whatzits-orders
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+              Resource: arn:aws:dynamodb:*:*:table/thingamabobs-orders
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: ${self:custom.logGroupResourceArn}
+    ScanProductsIAMRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: lambda-dynamodb-scan-products-tables
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole

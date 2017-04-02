@@ -18,7 +18,7 @@ class TestSendToChannel(TestCase):
 
         channel.send_message("message")
 
-        mock_client.put_record.assert_called()
+        self.assertTrue(mock_client.put_record.called)
 
     def test_calls_put_record_with_message(self, mock_boto3):
         mock_client = mock.MagicMock()

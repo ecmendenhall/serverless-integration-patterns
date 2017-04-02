@@ -15,7 +15,7 @@ class TestTransformers(TestCase):
     def test_parses_sns_event(self, mock_sns):
         with captured_output() as (out, err):
           self.transformer({}, {})
-        mock_sns.parse_event.assert_called()
+        self.assertTrue(mock_sns.parse_event.called)
 
     def test_transforms_message(self, mock_sns):
         mock_sns.parse_event.return_value = 'message'
@@ -51,7 +51,7 @@ class TestFilters(TestCase):
     def test_parses_sns_event(self, mock_sns):
         with captured_output() as (out, err):
           self.filter({}, {})
-        mock_sns.parse_event.assert_called()
+        self.assertTrue(mock_sns.parse_event.called)
 
     def test_prints_message(self, mock_sns):
         mock_sns.parse_event.return_value = '!'
