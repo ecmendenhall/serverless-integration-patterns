@@ -15,7 +15,7 @@ Chapter 2 of EIP defines four common integration styles: [Flat Files](http://www
 - SNS notifications (messaging)
 - Kinesis streams (messaging)
 
-It's a great toolkit for experimenting with the patterns in EIP without setting up all the enterprise stuff that needs to integrate.
+It's a great toolkit for experimenting with the patterns in EIP.
 
 ## Getting Started
 
