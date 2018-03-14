@@ -3,3 +3,4 @@ boto3
 nose
 requests
 dicttoxml
+mock
